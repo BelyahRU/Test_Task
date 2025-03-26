@@ -6,7 +6,7 @@ class PostsViewController: UIViewController {
     var posts = [Post]()
     var collectionView: UICollectionView!
     var loadingIndicator: UIActivityIndicatorView!
-    var expandedPosts = Set<Int>()  // Массив индексов развернутых ячеек
+    var expandedPosts = Array<Int>()  // Массив индексов развернутых ячеек
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -82,7 +82,7 @@ extension PostsViewController: UICollectionViewDataSource, UICollectionViewDeleg
         let bodyHeight = post.body.height(withConstrainedWidth: width, font: UIFont.systemFont(ofSize: 14))
         
         // Если ячейка развернута, увеличиваем размер
-        let height = expandedPosts.contains(indexPath.row) ? titleHeight + bodyHeight + 100 : titleHeight + bodyHeight + 50  // 70 для "Показать еще" и "Скрыть"
+        let height = expandedPosts.contains(indexPath.row) ? titleHeight + bodyHeight + 70 : 150
         return CGSize(width: width, height: height)
     }
 }
@@ -137,13 +137,15 @@ class PostCell: UICollectionViewCell {
         
         showMoreButton = UIButton()
         showMoreButton.setTitle("Показать еще", for: .normal)
-        showMoreButton.setTitleColor(.systemBlue, for: .normal)
+        showMoreButton.setTitleColor(.white, for: .normal)
+        showMoreButton.backgroundColor = .systemBlue
         showMoreButton.addTarget(self, action: #selector(didTapShowMore), for: .touchUpInside)
         contentView.addSubview(showMoreButton)
         
         hideButton = UIButton()
         hideButton.setTitle("Скрыть", for: .normal)
         hideButton.setTitleColor(.systemRed, for: .normal)
+        hideButton.backgroundColor = .systemBlue
         hideButton.addTarget(self, action: #selector(didTapHide), for: .touchUpInside)
         contentView.addSubview(hideButton)
         
@@ -161,12 +163,16 @@ class PostCell: UICollectionViewCell {
             bodyLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             bodyLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
             
-            showMoreButton.topAnchor.constraint(equalTo: bodyLabel.bottomAnchor, constant: 8),
+            showMoreButton.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
             showMoreButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            showMoreButton.widthAnchor.constraint(equalToConstant: 150),
+            showMoreButton.heightAnchor.constraint(equalToConstant: 40),
             
-            hideButton.topAnchor.constraint(equalTo: showMoreButton.bottomAnchor, constant: 8),
             hideButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            hideButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
+            hideButton.topAnchor.constraint(equalTo: bodyLabel.bottomAnchor, constant: 10),
+            hideButton.widthAnchor.constraint(equalToConstant: 100),
+            hideButton.heightAnchor.constraint(equalToConstant: 40),
+
         ])
     }
     
@@ -178,6 +184,10 @@ class PostCell: UICollectionViewCell {
         bodyLabel.numberOfLines = isExpanded ? 0 : 3
         showMoreButton.isHidden = isExpanded
         hideButton.isHidden = !isExpanded
+//        bodyLabel.heightAnchor.constraint(equalToConstant: isExpanded ? bodyLabel.intrinsicContentSize.height : 70).isActive = true
+        if !isExpanded {
+            bodyLabel.heightAnchor.constraint(equalToConstant: 70).isActive = true
+        }
     }
     
     @objc func didTapShowMore() {
@@ -191,12 +201,12 @@ class PostCell: UICollectionViewCell {
 
 extension PostsViewController: PostCellDelegate {
     func didTapShowMoreButton(at index: Int) {
-        expandedPosts.insert(index)
+        expandedPosts.append(index)
         collectionView.reloadData()
     }
     
     func didTapHideButton(at index: Int) {
-        expandedPosts.remove(index)
+        expandedPosts.removeAll(where: {$0 == index})
         collectionView.reloadData()
     }
 }
