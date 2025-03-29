@@ -3,22 +3,22 @@ import Alamofire
 
 class PostsViewController: UIViewController {
     
-    var posts = [Post]()
+    var viewModel = PostsViewModel()
     var collectionView: UICollectionView!
     var loadingIndicator: UIActivityIndicatorView!
-    var expandedPosts = Array<Int>()  // Массив индексов развернутых ячеек
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .black
         setupCollectionView()
         setupLoadingIndicator()
-        fetchPosts()
+        setupBindings()
+        viewModel.fetchPosts()
     }
     
     func setupCollectionView() {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 343, height: 172)  // Начальная высота ячеек
+        layout.itemSize = CGSize(width: 343, height: 172)
         layout.sectionInset = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
         
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
@@ -31,26 +31,20 @@ class PostsViewController: UIViewController {
     
     func setupLoadingIndicator() {
         loadingIndicator = UIActivityIndicatorView(style: .large)
-        loadingIndicator.center = view.center
         loadingIndicator.color = .gray
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.center = CGPoint(x: view.bounds.midX, y: view.bounds.maxY - 50)
         view.addSubview(loadingIndicator)
     }
     
-    func fetchPosts() {
-        loadingIndicator.startAnimating()
+    func setupBindings() {
+        viewModel.onPostsUpdated = { [weak self] in
+            self?.collectionView.reloadData()
+            self?.loadingIndicator.stopAnimating()
+        }
         
-        let fetcher = PostsDataFetcher()
-        fetcher.fetchPosts { result in
-            switch result {
-            case .success(let posts):
-                self.posts = posts
-                self.collectionView.reloadData()
-            case .failure(let error):
-                print("Ошибка при получении постов: \(error)")
-            }
-            
-            self.loadingIndicator.stopAnimating()
+        viewModel.onLoadingStateChanged = { [weak self] isLoading in
+            isLoading ? self?.loadingIndicator.startAnimating() : self?.loadingIndicator.stopAnimating()
         }
     }
 }
-

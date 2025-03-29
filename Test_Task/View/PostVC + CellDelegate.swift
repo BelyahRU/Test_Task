@@ -9,12 +9,12 @@ protocol PostCellDelegate: AnyObject {
 
 extension PostsViewController: PostCellDelegate {
     func didTapShowMoreButton(at index: Int) {
-        expandedPosts.append(index)
+        viewModel.expandedPosts.append(index)
         collectionView.reloadData()
     }
     
     func didTapHideButton(at index: Int) {
-        expandedPosts.removeAll(where: {$0 == index})
+        viewModel.expandedPosts.removeAll(where: {$0 == index})
         collectionView.reloadData()
     }
 }

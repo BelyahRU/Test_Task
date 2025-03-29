@@ -10,10 +10,8 @@ struct Post: Decodable {
 
 
 class PostsDataFetcher {
-    
-    func fetchPosts(completion: @escaping (Result<[Post], Error>) -> Void) {
-        let url = "https://jsonplaceholder.typicode.com/posts"
-        
+    func fetchPosts(page: Int, limit: Int, completion: @escaping (Result<[Post], Error>) -> Void) {
+        let url = "https://jsonplaceholder.typicode.com/posts?_page=\(page)&_limit=\(limit)"
         
         AF.request(url, method: .get).validate().responseDecodable(of: [Post].self) { response in
             switch response.result {
