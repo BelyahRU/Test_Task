@@ -1,6 +1,7 @@
 import UIKit
 import Alamofire
 
+//MARK: - Главный Контроллер
 class PostsViewController: UIViewController {
     
     var viewModel = PostsViewModel()
@@ -9,15 +10,18 @@ class PostsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureVC()
+    }
+    
+    private func configureVC() {
         self.view.backgroundColor = .black
-//        print(CoreDataManager.shared.removeAll())
         setupCollectionView()
         setupLoadingIndicator()
         setupBindings()
         viewModel.fetchPosts()
     }
     
-    func setupCollectionView() {
+    private func setupCollectionView() {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: 343, height: 172)
         layout.sectionInset = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
@@ -30,7 +34,7 @@ class PostsViewController: UIViewController {
         view.addSubview(collectionView)
     }
     
-    func setupLoadingIndicator() {
+    private func setupLoadingIndicator() {
         loadingIndicator = UIActivityIndicatorView(style: .large)
         loadingIndicator.color = .gray
         loadingIndicator.hidesWhenStopped = true
@@ -38,7 +42,8 @@ class PostsViewController: UIViewController {
         view.addSubview(loadingIndicator)
     }
     
-    func setupBindings() {
+    //MARK: - Binding
+    private func setupBindings() {
         viewModel.onPostsUpdated = { [weak self] in
             self?.collectionView.reloadData()
             self?.loadingIndicator.stopAnimating()

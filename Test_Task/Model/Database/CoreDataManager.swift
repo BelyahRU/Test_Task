@@ -31,6 +31,8 @@ class CoreDataManager {
 }
 
 extension CoreDataManager {
+    
+    /// Сохранение загруженных постов в БД
     func savePosts(_ posts: [Post]) {
         let context = persistentContainer.viewContext
         for post in posts {
@@ -40,7 +42,7 @@ extension CoreDataManager {
                 let existingPosts = try context.fetch(fetchRequest)
                 if existingPosts.isEmpty {
                     let entity = PostEntity(context: context)
-                    entity.id = String(post.id) // Сохраняем id как строку
+                    entity.id = String(post.id)
                     entity.userId = Int64(post.userId)
                     entity.title = post.title
                     entity.body = post.body
@@ -59,14 +61,16 @@ extension CoreDataManager {
         }
     }
 
-    
+    /// Выдает все посты, хранящиеся в БД
     func fetchPosts() -> [Post] {
         let context = persistentContainer.viewContext
         let fetchRequest: NSFetchRequest<PostEntity> = PostEntity.fetchRequest()
         do {
             let entities = try context.fetch(fetchRequest)
             return entities.compactMap { entity in
-                guard let idString = entity.id, let id = Int(idString) else { return nil } // Преобразуем id из строки в число
+                guard let idString = entity.id, let id = Int(idString) else { return nil }
+                
+                // Преобразуем в struct Post
                 return Post(
                     id: id,
                     userId: Int(entity.userId),
@@ -98,6 +102,7 @@ extension CoreDataManager {
         }
     }
     
+    /// Обновляет состояние лайка у конкретного поста
     func updateLikeStatus(for post: Post, isLiked: Bool) {
         let fetchRequest: NSFetchRequest<PostEntity> = PostEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "id == %@", String(post.id)) // id преобразуем в строку
@@ -107,7 +112,7 @@ extension CoreDataManager {
                 postEntity.isLiked = isLiked
             } else {
                 let newPost = PostEntity(context: context)
-                newPost.id = String(post.id) // Сохраняем id как строку
+                newPost.id = String(post.id)
                 newPost.isLiked = isLiked
             }
             try context.save()
@@ -116,6 +121,7 @@ extension CoreDataManager {
         }
     }
     
+    /// Выдает множество постов, у которых isLiked == true
     func fetchLikedPosts() -> Set<String> {
         let context = persistentContainer.viewContext
         let fetchRequest: NSFetchRequest<PostEntity> = PostEntity.fetchRequest()

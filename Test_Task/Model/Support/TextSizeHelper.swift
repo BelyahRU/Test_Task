@@ -1,12 +1,14 @@
 
 import UIKit
 
+//MARK: - Класс для вычисления размера текста
 class TextSizeHelper {
     
     static func textHeight(withWidth width: CGFloat, font: UIFont, text: String) -> CGFloat {
-        return textSize(font: font, text: text, width: width).height
+        return textSize(font: font, text: text, width: width).height 
     }
 
+    // Создается фрейм для заданного текста и возвращается размер
     static func textSize(font: UIFont, text: String, width: CGFloat = .greatestFiniteMagnitude, height: CGFloat = .greatestFiniteMagnitude) -> CGSize {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: height))
         label.numberOfLines = 0

@@ -1,6 +1,7 @@
 
 import UIKit
 
+//MARK: - Ячейка поста
 class PostCell: UICollectionViewCell {
     
     private var nameLabel: UILabel = {
@@ -35,7 +36,7 @@ class PostCell: UICollectionViewCell {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("View more", for: .normal)
-        button.setTitleColor(Resources.Colors.baseGreenColor, for: .normal)
+        button.setTitleColor(UIColor(red: 0.25, green: 0.84, blue: 0.47, alpha: 1.0), for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 13)
         return button
     }()
@@ -44,7 +45,7 @@ class PostCell: UICollectionViewCell {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Hide", for: .normal)
-        button.setTitleColor(Resources.Colors.baseGreenColor, for: .normal)
+        button.setTitleColor(UIColor(red: 0.25, green: 0.84, blue: 0.47, alpha: 1.0), for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 13)
         return button
     }()
@@ -63,9 +64,9 @@ class PostCell: UICollectionViewCell {
         return image
     }()
     
-    weak var delegate: PostCellDelegate?
-    var index: Int!
-    var post: Post!
+    weak var delegate: PostCellDelegate? // Делегат для работы с viewModel
+    var index: Int! // Индекс поста(задается в configure)
+    var post: Post! // Сам пост(задается в configure)
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -83,12 +84,14 @@ class PostCell: UICollectionViewCell {
         setupConstraints()
     }
     
+    // Настройки ячейки
     private func setupContentView() {
         contentView.layer.cornerRadius = 20
         contentView.layer.masksToBounds = true
         contentView.backgroundColor = UIColor.white
     }
     
+    // Добавление views на экран
     private func setupSubviews() {
         contentView.addSubview(titleLabel)
         contentView.addSubview(nameLabel)
@@ -99,6 +102,7 @@ class PostCell: UICollectionViewCell {
         contentView.addSubview(heartButton)
     }
     
+    // Установка констрейтов для views
     private func setupConstraints() {
         NSLayoutConstraint.activate([
             personImage.widthAnchor.constraint(equalToConstant: 40),
@@ -134,6 +138,7 @@ class PostCell: UICollectionViewCell {
         ])
     }
     
+    // Таргеты для кнопок
     private func setupTargets() {
         showMoreButton.addTarget(self, action: #selector(didTapShowMore), for: .touchUpInside)
         hideButton.addTarget(self, action: #selector(didTapHide), for: .touchUpInside)
@@ -157,7 +162,7 @@ class PostCell: UICollectionViewCell {
         // Устанавливаем лайк
         let heartImage = post.isLiked ? "heartImageSelected" : "heartImage"
         heartButton.setImage(UIImage(named: heartImage), for: .normal)
-
+        
         bodyLabel.numberOfLines = isExpanded ? 0 : 3
         titleLabel.numberOfLines = isExpanded ? 0 : 1
         showMoreButton.isHidden = isExpanded
