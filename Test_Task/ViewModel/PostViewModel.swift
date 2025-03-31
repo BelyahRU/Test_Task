@@ -28,7 +28,8 @@ class PostsViewModel {
     }
     
     func toggleLike(post: Post, isLiked: Bool) {
-        print(post.id)
+        guard let index = posts.firstIndex(where: { $0.id == post.id }) else { return }
+        posts[index].isLiked = isLiked
         coreDataManager.updateLikeStatus(for: post, isLiked: isLiked)
     }
 
@@ -59,12 +60,11 @@ class PostsViewModel {
                         switch result {
                         case .success(let newPosts):
                             let likedPostIDs = self.coreDataManager.fetchLikedPosts() // Загружаем лайки
-                            print(likedPostIDs)
                             var updatedPosts = newPosts.map { post -> Post in
                                 var updatedPost = post
-                                updatedPost.avatar = self.avatars.randomElement() // Случайный аватар
-                                updatedPost.name = self.names.randomElement() // Случайное имя
-                                updatedPost.isLiked = likedPostIDs.contains(post.id) // Подставляем лайки
+                                updatedPost.avatar = self.avatars.randomElement()
+                                updatedPost.name = self.names.randomElement()
+                                updatedPost.isLiked = likedPostIDs.contains(String(post.id)) // Подставляем лайки
                                 return updatedPost
                             }
 

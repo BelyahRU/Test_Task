@@ -33,29 +33,25 @@ class CoreDataManager {
 extension CoreDataManager {
     func savePosts(_ posts: [Post]) {
         let context = persistentContainer.viewContext
-        
         for post in posts {
             let fetchRequest: NSFetchRequest<PostEntity> = PostEntity.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "id == %d", post.id)
-            
+            fetchRequest.predicate = NSPredicate(format: "id == %@", String(post.id)) // id преобразуем в строку
             do {
                 let existingPosts = try context.fetch(fetchRequest)
-                
                 if existingPosts.isEmpty {
                     let entity = PostEntity(context: context)
-                            entity.userId = Int64(post.userId)
-                            entity.title = post.title
-                            entity.body = post.body
-                            entity.avatar = post.avatar  // Сохраняем аватар
-                            entity.name = post.name      // Сохраняем имя
-                            entity.isLiked = post.isLiked // Сохраняем статус лайка
+                    entity.id = String(post.id) // Сохраняем id как строку
+                    entity.userId = Int64(post.userId)
+                    entity.title = post.title
+                    entity.body = post.body
+                    entity.avatar = post.avatar
+                    entity.name = post.name
+                    entity.isLiked = post.isLiked
                 }
-                
             } catch {
                 print("Ошибка при проверке существующих постов: \(error)")
             }
         }
-        
         do {
             try context.save()
         } catch {
@@ -67,18 +63,18 @@ extension CoreDataManager {
     func fetchPosts() -> [Post] {
         let context = persistentContainer.viewContext
         let fetchRequest: NSFetchRequest<PostEntity> = PostEntity.fetchRequest()
-        
         do {
             let entities = try context.fetch(fetchRequest)
-            return entities.map { entity in
+            return entities.compactMap { entity in
+                guard let idString = entity.id, let id = Int(idString) else { return nil } // Преобразуем id из строки в число
                 return Post(
-                    id: Int(bitPattern: entity.id),
+                    id: id,
                     userId: Int(entity.userId),
                     title: entity.title ?? "",
                     body: entity.body ?? "",
-                    avatar: entity.avatar,   // Загружаем аватар
-                    name: entity.name,       // Загружаем имя
-                    isLiked: entity.isLiked  // Загружаем лайк
+                    avatar: entity.avatar,
+                    name: entity.name,
+                    isLiked: entity.isLiked
                 )
             }
         } catch {
@@ -103,31 +99,30 @@ extension CoreDataManager {
     }
     
     func updateLikeStatus(for post: Post, isLiked: Bool) {
-            let fetchRequest: NSFetchRequest<PostEntity> = PostEntity.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "id == %d", post.id)
-            
-            do {
-                let results = try context.fetch(fetchRequest)
-                if let postEntity = results.first {
-                    postEntity.isLiked = isLiked
-                } else {
-                    let newPost = PostEntity(context: context)
-                    newPost.isLiked = isLiked
-                }
-                try context.save()
-            } catch {
-                print("Ошибка обновления лайка: \(error)")
+        let fetchRequest: NSFetchRequest<PostEntity> = PostEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", String(post.id)) // id преобразуем в строку
+        do {
+            let results = try context.fetch(fetchRequest)
+            if let postEntity = results.first {
+                postEntity.isLiked = isLiked
+            } else {
+                let newPost = PostEntity(context: context)
+                newPost.id = String(post.id) // Сохраняем id как строку
+                newPost.isLiked = isLiked
             }
+            try context.save()
+        } catch {
+            print("Ошибка обновления лайка: \(error)")
         }
+    }
     
-    func fetchLikedPosts() -> Set<Int> {
+    func fetchLikedPosts() -> Set<String> {
         let context = persistentContainer.viewContext
         let fetchRequest: NSFetchRequest<PostEntity> = PostEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "isLiked == %@", NSNumber(value: true))
-
         do {
             let likedPosts = try context.fetch(fetchRequest)
-            return Set(likedPosts.map { Int(bitPattern: $0.id) })
+            return Set(likedPosts.compactMap { $0.id }) // Возвращаем Set<String>
         } catch {
             print("Ошибка загрузки лайков из CoreData: \(error)")
             return []

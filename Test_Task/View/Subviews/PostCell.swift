@@ -143,10 +143,11 @@ class PostCell: UICollectionViewCell {
     func configure(with post: Post, index: Int, isExpanded: Bool) {
         self.index = index
         self.post = post
+
         titleLabel.text = post.title
         bodyLabel.text = post.body
         nameLabel.text = post.name ?? "Unknown User"
-        
+
         if let avatarName = post.avatar {
             personImage.image = UIImage(named: avatarName)
         } else {

@@ -21,5 +21,9 @@ extension PostsViewController: PostCellDelegate {
     
     func didLikePost(_ post: Post, isLiked: Bool) {
         viewModel.toggleLike(post: post, isLiked: isLiked)
+        if let index = viewModel.posts.firstIndex(where: { $0.id == post.id }) {
+            let indexPath = IndexPath(row: index, section: 0)
+            collectionView.reloadItems(at: [indexPath])
+        }
     }
 }
