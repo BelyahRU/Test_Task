@@ -65,6 +65,7 @@ class PostCell: UICollectionViewCell {
     
     weak var delegate: PostCellDelegate?
     var index: Int!
+    var post: Post!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -141,15 +142,27 @@ class PostCell: UICollectionViewCell {
     
     func configure(with post: Post, index: Int, isExpanded: Bool) {
         self.index = index
+        self.post = post
         titleLabel.text = post.title
         bodyLabel.text = post.body
-        personImage.image = UIImage(named: "iconImage")
+        nameLabel.text = post.name ?? "Unknown User"
+        
+        if let avatarName = post.avatar {
+            personImage.image = UIImage(named: avatarName)
+        } else {
+            personImage.image = UIImage(named: "defaultAvatar")
+        }
+
+        // Устанавливаем лайк
+        let heartImage = post.isLiked ? "heartImageSelected" : "heartImage"
+        heartButton.setImage(UIImage(named: heartImage), for: .normal)
+
         bodyLabel.numberOfLines = isExpanded ? 0 : 3
         titleLabel.numberOfLines = isExpanded ? 0 : 1
         showMoreButton.isHidden = isExpanded
         hideButton.isHidden = !isExpanded
-
     }
+
     
     @objc func didTapShowMore() {
         delegate?.didTapShowMoreButton(at: index)  // Уведомляем контроллер, что нужно развернуть ячейку
@@ -162,8 +175,10 @@ class PostCell: UICollectionViewCell {
     @objc func heartPressed() {
         if heartButton.currentImage == UIImage(named: "heartImage") {
             heartButton.setImage(UIImage(named: "heartImageSelected"), for: .normal)
+            delegate?.didLikePost(post, isLiked: true)
         } else {
             heartButton.setImage(UIImage(named: "heartImage"), for: .normal)
+            delegate?.didLikePost(post, isLiked: false)
         }
     }
 }

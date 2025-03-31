@@ -10,6 +10,7 @@ class PostsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .black
+//        print(CoreDataManager.shared.removeAll())
         setupCollectionView()
         setupLoadingIndicator()
         setupBindings()
