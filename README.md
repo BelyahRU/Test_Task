@@ -1,4 +1,4 @@
-![Simulator Screenshot - iPhone 16 Pro - 2025-03-31 at 19 20 14](https://github.com/user-attachments/assets/21b1ef85-6233-44fb-bb1b-3a56883119a4)# Тестовое задание на позицию стажера iOS-разработчика
+# Тестовое задание на позицию стажера iOS-разработчика
 
 Реализованы все функции, требуемые в ТЗ, включая обработку лайков.
 
@@ -19,10 +19,11 @@
 ---
 
 **СКРИНШОТЫ**
-
-<img src="https://github.com/user-attachments/assets/76dfc42d-f16b-4ef7-9798-70968b95577a" width="200" />
+<img src="https://github.com/user-attachments/assets/21b1ef85-6233-44fb-bb1b-3a56883119a4" width="200" />
 
 <img src="https://github.com/user-attachments/assets/9662b35e-fa47-478f-a5f8-895ba2e98d80" width="200" />
+
+<img src="https://github.com/user-attachments/assets/76dfc42d-f16b-4ef7-9798-70968b95577a" width="200" />
 
 
 ---
